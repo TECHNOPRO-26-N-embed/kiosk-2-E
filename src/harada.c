@@ -23,7 +23,8 @@ typedef struct {
 } Product;
 
 
-void buyProduct(); // Prototype declaration added
+
+void buyProduct();
 
 Product products[3]={
     {"コーラ", 120, 5},
