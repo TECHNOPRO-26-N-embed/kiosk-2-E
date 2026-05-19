@@ -83,5 +83,10 @@ void buyProduct(){
             break;
 
         }
+        else{
+            printf("売り切れです。別の商品を選んでください。\n");
+            printf("購入する商品の番号を選んでください：");
+            scanf("%d", &productID);
+        }
     }
 }
