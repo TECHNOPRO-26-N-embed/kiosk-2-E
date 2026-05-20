@@ -14,7 +14,7 @@ typedef struct {
 // 商品データのサンプル
 Product products[] = {
     {1, "コーラ", 120, 5},
-    {2, "お茶", 100, 3},
+    {2, "お茶", 100, 0},
     {3, "水", 80, 10}
 };
 int productCount = sizeof(products) / sizeof(products[0]);
@@ -39,21 +39,28 @@ int inputMoney() {
     while (1) {
         printf("\n投入金額を入力してください（1～%d円）: ", MONEY_LIMIT);
         if (fgets(buf, sizeof(buf), stdin) == NULL) {
-            printf("入力エラーです。\n");
+            printf("入力エラーです。再入力してください。\n");
             continue;
         }
-        // 改行除去
         buf[strcspn(buf, "\n")] = '\0';
         if (strlen(buf) == 0) {
-            printf("無効な金額です。再入力してください。\n");
+            printf("未入力です。再入力してください。\n");
             continue;
         }
         money = (int)strtol(buf, &endptr, 10);
-        // 入力が整数のみか、範囲内か判定
-        if (*endptr == '\0' && money > 0 && money <= MONEY_LIMIT) {
-            return money;
+        if (*endptr != '\0') {
+            printf("数字のみを入力してください。\n");
+            continue;
         }
-        printf("無効な金額です。再入力してください。\n");
+        if (money <= 0) {
+            printf("1円以上を入力してください。\n");
+            continue;
+        }
+        if (money > MONEY_LIMIT) {
+            printf("%d円以下で入力してください。\n", MONEY_LIMIT);
+            continue;
+        }
+        return money;
     }
 }
 
