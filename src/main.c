@@ -1,5 +1,125 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-int main(void) {
-    return 0;
+// 商品データ構造体
+typedef struct {
+    int id;
+    char name[50];
+    int price;
+    int stock;
+} Product;
+
+// 商品データのサンプル
+Product products[] = {
+    {1, "コーラ", 120, 5},
+    {2, "お茶", 100, 3},
+    {3, "水", 80, 10}
+};
+int productCount = sizeof(products) / sizeof(products[0]);
+
+// 商品リストを表示
+void showProductList() {
+    printf("\n商品リスト:\n");
+    printf("ID\t商品名\t価格\t在庫\n");
+    for (int i = 0; i < productCount; i++) {
+        printf("%d\t%s\t%d円\t%s\n", products[i].id, products[i].name, products[i].price,
+               products[i].stock > 0 ? "在庫あり" : "売り切れ");
+    }
+}
+
+// 投入金額を受け取る
+int inputMoney() {
+    int money;
+    while (1) {
+        printf("\n投入金額を入力してください: ");
+        if (scanf("%d", &money) == 1 && money > 0) {
+            return money;
+        }
+        printf("無効な金額です。再入力してください。\n");
+        while (getchar() != '\n'); // 入力バッファをクリア
+    }
+}
+
+// お釣りを計算
+int calcChange(int money, int price) {
+    return money - price;
+}
+
+// 購入履歴を保存
+void savePurchase(const char* productName, int price) {
+    FILE *file = fopen("purchase_history.csv", "a");
+    if (file == NULL) {
+        printf("購入履歴の保存に失敗しました。\n");
+        return;
+    }
+
+    time_t now = time(NULL);
+    struct tm *t = localtime(&now);
+    fprintf(file, "%s,%d,%04d-%02d-%02d %02d:%02d:%02d\n",
+            productName, price, t->tm_year + 1900, t->tm_mon + 1, t->tm_mday,
+            t->tm_hour, t->tm_min, t->tm_sec);
+    fclose(file);
+}
+
+// 商品購入処理
+void buyProduct() {
+    showProductList();
+
+    int productId;
+    printf("\n購入したい商品のIDを入力してください: ");
+    scanf("%d", &productId);
+
+    Product *selectedProduct = NULL;
+    for (int i = 0; i < productCount; i++) {
+        if (products[i].id == productId) {
+            selectedProduct = &products[i];
+            break;
+        }
+    }
+
+    if (selectedProduct == NULL) {
+        printf("無効な商品IDです。\n");
+        return;
+    }
+
+    if (selectedProduct->stock <= 0) {
+        printf("%sは売り切れです。\n", selectedProduct->name);
+        return;
+    }
+
+    int money = inputMoney();
+    if (money < selectedProduct->price) {
+        printf("金額が不足しています。\n");
+        return;
+    }
+
+    int change = calcChange(money, selectedProduct->price);
+    printf("%sを購入しました。お釣り: %d円\n", selectedProduct->name, change);
+
+    selectedProduct->stock--;
+    savePurchase(selectedProduct->name, selectedProduct->price);
+}
+
+int main() {
+    while (1) {
+        printf("\n1. 商品リストを表示\n2. 商品を購入\n3. 終了\n選択: ");
+        int choice;
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                showProductList();
+                break;
+            case 2:
+                buyProduct();
+                break;
+            case 3:
+                printf("終了します。\n");
+                return 0;
+            default:
+                printf("無効な選択です。\n");
+        }
+    }
 }
