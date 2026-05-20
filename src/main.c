@@ -36,9 +36,6 @@ int inputMoney() {
     int money;
     char *endptr;
     while (1) {
-        // 標準入力バッファをクリア
-        fflush(stdin);
-
         printf("\n投入金額を入力してください（1～%d円）: ", MONEY_LIMIT);
         if (fgets(buf, sizeof(buf), stdin) == NULL) {
             printf("入力エラーです。再入力してください。\n");
@@ -92,8 +89,16 @@ void buyProduct() {
     showProductList();
 
     int productId;
+    char idBuf[16];
     printf("\n購入したい商品のIDを入力してください: ");
-    scanf("%d", &productId);
+    if (fgets(idBuf, sizeof(idBuf), stdin) == NULL) {
+        printf("入力エラーです。\n");
+        return;
+    }
+    if (sscanf(idBuf, "%d", &productId) != 1) {
+        printf("無効な商品IDです。\n");
+        return;
+    }
 
     Product *selectedProduct = NULL;
     for (int i = 0; i < productCount; i++) {
