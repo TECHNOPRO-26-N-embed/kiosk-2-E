@@ -30,15 +30,30 @@ void showProductList() {
 }
 
 // 投入金額を受け取る
+
+#define MONEY_LIMIT 10000
 int inputMoney() {
+    char buf[32];
     int money;
+    char *endptr;
     while (1) {
-        printf("\n投入金額を入力してください: ");
-        if (scanf("%d", &money) == 1 && money > 0) {
+        printf("\n投入金額を入力してください（1～%d円）: ", MONEY_LIMIT);
+        if (fgets(buf, sizeof(buf), stdin) == NULL) {
+            printf("入力エラーです。\n");
+            continue;
+        }
+        // 改行除去
+        buf[strcspn(buf, "\n")] = '\0';
+        if (strlen(buf) == 0) {
+            printf("無効な金額です。再入力してください。\n");
+            continue;
+        }
+        money = (int)strtol(buf, &endptr, 10);
+        // 入力が整数のみか、範囲内か判定
+        if (*endptr == '\0' && money > 0 && money <= MONEY_LIMIT) {
             return money;
         }
         printf("無効な金額です。再入力してください。\n");
-        while (getchar() != '\n'); // 入力バッファをクリア
     }
 }
 
