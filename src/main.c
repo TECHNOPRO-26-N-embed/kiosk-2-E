@@ -30,13 +30,15 @@ void showProductList() {
 }
 
 // 投入金額を受け取る
-
 #define MONEY_LIMIT 10000
 int inputMoney() {
     char buf[32];
     int money;
     char *endptr;
     while (1) {
+        // 標準入力バッファをクリア
+        fflush(stdin);
+
         printf("\n投入金額を入力してください（1～%d円）: ", MONEY_LIMIT);
         if (fgets(buf, sizeof(buf), stdin) == NULL) {
             printf("入力エラーです。再入力してください。\n");
@@ -128,7 +130,15 @@ int main() {
     while (1) {
         printf("\n1. 商品リストを表示\n2. 商品を購入\n3. 終了\n選択: ");
         int choice;
-        scanf("%d", &choice);
+        char buf[16];
+        if (fgets(buf, sizeof(buf), stdin) == NULL) {
+            printf("入力エラーです。\n");
+            continue;
+        }
+        if (sscanf(buf, "%d", &choice) != 1) {
+            printf("数字で選択してください。\n");
+            continue;
+        }
 
         switch (choice) {
             case 1:
