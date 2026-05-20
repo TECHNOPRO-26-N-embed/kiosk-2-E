@@ -14,7 +14,7 @@ typedef struct {
 // 商品データのサンプル
 Product products[] = {
     {1, "コーラ", 120, 5},
-    {2, "お茶", 100, 0},
+    {2, "お茶", 100, 1},
     {3, "水", 80, 10}
 };
 int productCount = sizeof(products) / sizeof(products[0]);
