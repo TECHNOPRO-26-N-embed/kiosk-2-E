@@ -113,10 +113,16 @@ void buyProduct() {
         return;
     }
 
-    int money = inputMoney();
-    if (money < selectedProduct->price) {
-        printf("金額が不足しています。\n");
-        return;
+    int money = 0;
+    while (1) {
+        money += inputMoney();
+        if (money < selectedProduct->price) {
+            printf("金額が不足しています。現在の投入金額: %d円\n", money);
+            printf("%d円を返却します。\n", money);
+            money = 0; // 返却後、投入金額をリセット
+        } else {
+            break;
+        }
     }
 
     int change = calcChange(money, selectedProduct->price);
